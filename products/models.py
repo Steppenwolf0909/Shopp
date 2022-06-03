@@ -1,6 +1,8 @@
 from django.db import models
-
 # Create your models here.
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
+
 from clients.models import User
 
 
@@ -25,8 +27,8 @@ class Product(models.Model):
     name = models.CharField(max_length=200, verbose_name='Наименование товара', null=True)
     price = models.IntegerField(default=0, verbose_name='Цена')
     description = models.CharField(max_length=2000, verbose_name='Описание', null=True, blank=True)
-    views = models.IntegerField(default=0, verbose_name='Просмотры')
-    favorites = models.IntegerField(default=0, verbose_name='Избранное')
+    views_count = models.IntegerField(default=0, verbose_name='Просмотры')
+    favorites_count = models.IntegerField(default=0, verbose_name='Избранное')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
     location = models.CharField(max_length=2000, verbose_name='Местоположение объявления', null=True, blank=True)
     parent_product = models.ForeignKey('Product', on_delete=models.CASCADE, verbose_name='Продукт-родитель')
@@ -75,6 +77,19 @@ class Favorites(models.Model):
     class Meta:
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
+
+
+@receiver(post_save, sender=Favorites)
+def create_favorites(sender, instance, created, **kwargs):
+    if created:
+        instance.product.favorites_count += 1
+        instance.product.save()
+
+
+@receiver(pre_delete, sender=Favorites)
+def create_favorites(sender, instance, **kwargs):
+    instance.product.favorites_count -= 1
+    instance.product.save()
 
 
 class History(models.Model):

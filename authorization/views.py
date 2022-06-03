@@ -1,6 +1,5 @@
 from clients.models import User
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.validators import validate_email
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 # Create your views here.
 from rest_framework import generics, status, permissions

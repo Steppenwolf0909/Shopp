@@ -54,13 +54,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Review(models.Model):
-    user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE, related_name='review')
     estimate = models.IntegerField(verbose_name='Оценка', null=True, blank=False)
     text = models.CharField(max_length=2000, verbose_name='Отзыв', null=True, blank=True)
     created = models.DateTimeField(auto_now=True, verbose_name='Время создания')
 
     def __str__(self):
-        return f'{self.user.username} {self.created}'
+        return f'{self.user.email} {self.created}'
 
     class Meta:
         verbose_name = _('Отзыв')

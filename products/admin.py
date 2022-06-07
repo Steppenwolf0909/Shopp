@@ -1,7 +1,11 @@
 from django.contrib import admin
 
-from products.models import Photo, Product
+from . import models
 
-admin.site.register(Photo)
-admin.site.register(Product)
+admin.site.register(models.Photo)
+admin.site.register(models.Product)
+admin.site.register(models.Asset)
+admin.site.register(models.ValueAsset)
+admin.site.register(models.Favorites)
+admin.site.register(models.History)
 

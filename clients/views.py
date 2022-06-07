@@ -16,9 +16,11 @@ class ListUserView(generics.ListAPIView):
     serializer_class = serializers.UserSerializer
     queryset = User.objects.all()
 
+
 class GetDetailUserView(generics.RetrieveAPIView):
-    serializer_class=serializers.GetDetailUserSerializer
+    serializer_class = serializers.GetDetailUserSerializer
     queryset = User.objects.all()
+
 
 class CreateReviewView(generics.CreateAPIView):
     serializer_class = serializers.ReviewSerializer

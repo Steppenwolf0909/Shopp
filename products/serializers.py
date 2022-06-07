@@ -15,3 +15,9 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Product
         fields = '__all__'
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Favorites
+        fields = '__all__'

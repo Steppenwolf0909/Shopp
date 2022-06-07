@@ -51,7 +51,7 @@ class Product(models.Model):
     favorites_count = models.IntegerField(default=0, verbose_name='Избранное')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
     location = models.CharField(max_length=2000, verbose_name='Местоположение объявления', null=True, blank=True)
-    parent_product = models.ForeignKey('Product', on_delete=models.CASCADE, verbose_name='Продукт-родитель')
+    parent_product = models.ForeignKey('Product', on_delete=models.CASCADE, verbose_name='Продукт-родитель', blank=True)
 
     def __str__(self):
         return f'{self.user.email} {self.name}'

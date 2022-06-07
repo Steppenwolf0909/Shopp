@@ -2,8 +2,11 @@ from django.db import models
 # Create your models here.
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
-
+from config import settings
 from clients.models import User
+from PIL import Image
+from io import BytesIO
+from django.core.files import File
 
 
 class Category(models.Model):
@@ -18,6 +21,23 @@ class Category(models.Model):
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
+class Photo(models.Model):
+    image = models.ImageField(upload_to=settings.MEDIA_URL, max_length=500)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, null=True, blank=True)
+    def __str__(self):
+        return '%s' % self.id
+
+    class Meta:
+        verbose_name = "Фотo"
+        verbose_name_plural = "Фото"
+
+    def save(self, *args, **kwargs):
+        im = Image.open(self.image)
+        im_io = BytesIO()
+        im.save(im_io, im.format, optimize=True, quality=40)
+        new_image = File(im_io, name=self.image.name)
+        self.image = new_image
+        super().save(*args, **kwargs)
 
 class Product(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Владелец')

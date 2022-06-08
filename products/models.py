@@ -54,7 +54,7 @@ class Product(models.Model):
     parent_product = models.ForeignKey('Product', on_delete=models.CASCADE, verbose_name='Продукт-родитель', blank=True, null=True)
 
     def __str__(self):
-        return f'{self.user.email} {self.name}'
+        return f'{self.id} {self.user.email} {self.name}'
 
     class Meta:
         verbose_name = 'Товар'

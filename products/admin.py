@@ -8,4 +8,4 @@ admin.site.register(models.Asset)
 admin.site.register(models.ValueAsset)
 admin.site.register(models.Favorites)
 admin.site.register(models.History)
-
+admin.site.register(models.Category)

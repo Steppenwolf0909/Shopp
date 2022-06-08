@@ -1,14 +1,14 @@
 from django.db.models import Q
 from rest_framework import permissions
-from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView
+from rest_framework.viewsets import generics
 
 from . import models
-from products.serializers import ProductSerializer, FavoriteSerializer
+from . import serializers
 
 
-class SearchResultsView(ListAPIView):
+class SearchResultsView(generics.ListAPIView):
     model = models.Product
-    serializer_class = ProductSerializer
+    serializer_class = serializers.ProductSerializer
 
     def get_queryset(self):
         query = self.request.GET.get('q')
@@ -32,25 +32,25 @@ class SearchResultsView(ListAPIView):
         return models.Product.objects.all()
 
 
-class ListFavoriteAPIView(ListAPIView):
+class ListFavoriteAPIView(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = FavoriteSerializer
+    serializer_class = serializers.FavoriteSerializer
 
     def get_queryset(self):
         user = self.request.user
         return models.Favorites.objects.filter(user=user)
 
 
-class CreateFavoriteAPIView(CreateAPIView):
+class CreateFavoriteAPIView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = models.Favorites.objects.all()
-    serializer_class = FavoriteSerializer
+    serializer_class = serializers.FavoriteSerializer
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
 
-class DeleteFavoriteAPIView(DestroyAPIView):
+class DeleteFavoriteAPIView(generics.DestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = models.Favorites.objects.all()
-    serializer_class = FavoriteSerializer
+    serializer_class = serializers.FavoriteSerializer

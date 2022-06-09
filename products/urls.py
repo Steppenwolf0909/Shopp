@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('all/', views.ListProductsAPIView.as_view(), name='get_products'),
+    path('detail/<str:pk>/', views.DetailProductAPIView.as_view(), name='detail_products'),
     re_path('search/', views.SearchResultsView.as_view(), name='search_results'),
     path('get_favorite/', views.ListFavoriteAPIView.as_view(), name='get_favorite'),
     path('create_favorite/', views.CreateFavoriteAPIView.as_view(), name='create_favorite'),

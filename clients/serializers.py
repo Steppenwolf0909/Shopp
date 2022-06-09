@@ -21,3 +21,4 @@ class GetDetailUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ('password', 'is_staff',)
+

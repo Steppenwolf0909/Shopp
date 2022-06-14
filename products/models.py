@@ -1,18 +1,21 @@
+from io import BytesIO
+
+from PIL import Image
+from django.core.files import File
 from django.db import models
 # Create your models here.
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
-from config import settings
+
 from clients.models import User
-from PIL import Image
-from io import BytesIO
-from django.core.files import File
+from config import settings
 
 
 class Category(models.Model):
     name = models.CharField(max_length=200, verbose_name='Наименование категории', null=True)
     slug = models.CharField(max_length=200, null=True)
-    parent_category = models.ForeignKey('Category', on_delete=models.CASCADE, verbose_name='Категория-родитель', blank=True, null=True)
+    parent_category = models.ForeignKey('Category', on_delete=models.CASCADE, verbose_name='Категория-родитель',
+                                        blank=True, null=True)
 
     def __str__(self):
         return f'{self.name}'
@@ -21,23 +24,26 @@ class Category(models.Model):
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
+
 class Photo(models.Model):
-    image = models.ImageField(upload_to=settings.MEDIA_URL, max_length=500)
-    product = models.ForeignKey('Product', on_delete=models.CASCADE, null=True, blank=True)
+    file = models.ImageField(upload_to='products/images', max_length=500, null=True)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='photo')
+
     def __str__(self):
-        return '%s' % self.id
+        return f'{self.id} {self.product.name}'
 
     class Meta:
         verbose_name = "Фотo"
         verbose_name_plural = "Фото"
 
     def save(self, *args, **kwargs):
-        im = Image.open(self.image)
+        im = Image.open(self.file)
         im_io = BytesIO()
         im.save(im_io, im.format, optimize=True, quality=40)
-        new_image = File(im_io, name=self.image.name)
+        new_image = File(im_io, name=self.file.name)
         self.image = new_image
         super().save(*args, **kwargs)
+
 
 class Product(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Владелец')
@@ -47,11 +53,12 @@ class Product(models.Model):
     name = models.CharField(max_length=200, verbose_name='Наименование товара', null=True)
     price = models.IntegerField(default=0, verbose_name='Цена')
     description = models.CharField(max_length=2000, verbose_name='Описание', null=True, blank=True)
-    views_count = models.IntegerField(default=0, verbose_name='Просмотры')
-    favorites_count = models.IntegerField(default=0, verbose_name='Избранное')
-    created = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
+    views_count = models.IntegerField(default=0, verbose_name='Просмотры', blank=True)
+    favorites_count = models.IntegerField(default=0, verbose_name='Избранное', blank=True)
+    created = models.DateTimeField(auto_now_add=True, verbose_name='Создано', blank=True)
     location = models.CharField(max_length=2000, verbose_name='Местоположение объявления', null=True, blank=True)
-    parent_product = models.ForeignKey('Product', on_delete=models.CASCADE, verbose_name='Продукт-родитель', blank=True, null=True)
+    parent_product = models.ForeignKey('Product', on_delete=models.CASCADE, verbose_name='Продукт-родитель', blank=True,
+                                       null=True)
 
     def __str__(self):
         return f'{self.id} {self.user.email} {self.name}'
@@ -74,7 +81,7 @@ class Asset(models.Model):
 
 
 class ValueAsset(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт', related_name='assets')
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, verbose_name='Характеристика')
     value = models.CharField(max_length=512, verbose_name='Значение характеристики', null=True, blank=True)
 
@@ -116,7 +123,7 @@ class History(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт',
                                 related_name='history_product')
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь', related_name='history_user')
-    date = models.DateTimeField(auto_now_add=True)
+    watched = models.DateTimeField(auto_now_add=True, verbose_name='Время просмотра', null=True)
 
     def __str__(self):
         return f'{self.product.id} {self.user.email}'

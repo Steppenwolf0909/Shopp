@@ -12,7 +12,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        exclude = ('password', 'is_staff',)
+        exclude = ('password', 'is_staff', 'is_active', 'groups', 'user_permissions', 'is_superuser')
 
 
 class GetDetailUserSerializer(serializers.ModelSerializer):
@@ -21,4 +21,3 @@ class GetDetailUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ('password', 'is_staff',)
-

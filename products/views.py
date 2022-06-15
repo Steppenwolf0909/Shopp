@@ -129,3 +129,18 @@ class DetailProductAPIView(generics.RetrieveAPIView):
         history = models.History(product=instance, user=request.user)
         history.save()
         return Response(serializer.data)
+
+
+class GetAssetTemplate(generics.ListAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = serializers.AssetTemplateSerializer
+
+    def get_queryset(self):
+        cat = models.Category.objects.get(id=self.kwargs['category_id'])
+        return models.AssetTemplate.objects.filter(category=cat)
+
+
+class GetCategories(generics.ListAPIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = serializers.CategorySerializer
+    queryset = models.Category.objects.all()

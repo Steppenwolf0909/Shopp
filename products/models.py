@@ -8,7 +8,6 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 
 from clients.models import User
-from config import settings
 
 
 class Category(models.Model):
@@ -78,6 +77,18 @@ class Asset(models.Model):
     class Meta:
         verbose_name = 'Характеристика'
         verbose_name_plural = 'Характеристики'
+
+
+class AssetTemplate(models.Model):
+    asset = models.ForeignKey(Asset, on_delete=models.CASCADE, verbose_name='Характеристика')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
+
+    def __str__(self):
+        return f'{self.category.name} {self.asset.name}'
+
+    class Meta:
+        verbose_name = 'Набор характеристик для категории'
+        verbose_name_plural = 'Наборы характеристик для категорий'
 
 
 class ValueAsset(models.Model):

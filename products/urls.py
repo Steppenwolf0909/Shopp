@@ -9,6 +9,9 @@ urlpatterns = [
     path('create_favorite/', views.CreateFavoriteAPIView.as_view(), name='create_favorite'),
     path('delete_favorite/', views.DeleteFavoriteAPIView.as_view(), name='delete_favorite'),
     path('create_product/', views.CreateProductAPIView.as_view(), name='create_product'),
-    path('delete_product/<str:pk>/', views.DeleteProductAPIView.as_view(), name='delete_product'),
+    path('delete_product/<int:pk>/', views.DeleteProductAPIView.as_view(), name='delete_product'),
     path('update_product/', views.UpdateProductAPIView.as_view(), name='delete_product'),
+    path('get_asset_template/<int:category_id>/', views.GetAssetTemplate.as_view(), name='asset_template'),
+    path('get_categories/', views.GetCategories.as_view(), name='get_categories'),
+
 ]

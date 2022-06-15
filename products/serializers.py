@@ -86,3 +86,11 @@ class ProductCardSerializer(serializers.Serializer):
     description = serializers.CharField(required=False, max_length=2000)
     location = serializers.CharField(required=False, max_length=200)
     parent_product = serializers.PrimaryKeyRelatedField(queryset=models.Product.objects.all(), required=False)
+
+
+class AssetTemplateSerializer(serializers.ModelSerializer):
+    asset = AssetsSerializer()
+
+    class Meta:
+        model = models.AssetTemplate
+        exclude = ('category',)

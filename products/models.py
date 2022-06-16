@@ -2,7 +2,6 @@ from io import BytesIO
 
 from PIL import Image
 from django.core.files import File
-import null as null
 from django.db import models
 # Create your models here.
 from django.db.models.signals import post_save, pre_delete

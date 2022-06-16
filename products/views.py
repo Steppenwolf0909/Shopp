@@ -166,7 +166,7 @@ class AddPhotoAPIView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_photo = models.Photo(
-            file=serializer.validated_data['file'],
+            file=serializer.validated_data['file'].replace(settings.MEDIA_ROOT+'/', ''),
             product=serializer.validated_data['product'],
         )
         new_photo.save()

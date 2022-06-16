@@ -7,6 +7,7 @@ from rest_framework.viewsets import generics
 
 from . import models
 from . import serializers
+from config import settings
 
 
 class SearchResultsView(generics.ListAPIView):
@@ -66,29 +67,20 @@ class CreateProductAPIView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        new_product = models.Product(
-            user=request.user,
-            category=serializer.validated_data['category'],
-            manufacturer=serializer.validated_data['manufacturer'],
-            name=serializer.validated_data['name'],
-            price=serializer.validated_data['price'],
-            description=serializer.validated_data['description'],
-            location=serializer.validated_data['location'],
-        )
-        if 'parent_product' in serializer.validated_data:
-            new_product.parent_product = serializer.validated_data['parent_product']
-        new_product.save()
-        update_or_create_assets(assets=serializer.validated_data['assets'], product=new_product)
-        return Response(data=self.request.data, status=status.HTTP_201_CREATED)
+        if update_or_create_product(serializer, request.user):
+            return Response(data=request.data, status=status.HTTP_201_CREATED)
+
 
 class UpdateProductAPIView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = models.Product.objects.all()
-    serializer_class = serializers.ProductSerializer
+    serializer_class = serializers.ProductCardSerializer
 
-    def patch(self, serializer):
-        update_or_create_assets(self.request, self.request.query_params.get('id'))
-        return Response(data=self.request.data, status=status.HTTP_201_CREATED)
+    def patch(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        if update_or_create_product(serializer, request.user, self.request.query_params.get('id')):
+            return Response(data=request.data, status=status.HTTP_201_CREATED)
 
 
 def update_or_create_assets(assets, product):
@@ -103,6 +95,28 @@ def update_or_create_assets(assets, product):
                 "product": product
             }
         )
+
+def update_or_create_product(serializer, user, id=None):
+    try:
+        product, created = models.Product.objects.update_or_create(
+            id=id,
+            defaults={
+                "user": user,
+                "manufacturer": serializer.validated_data['manufacturer'],
+                "name": serializer.validated_data['name'],
+                "price": serializer.validated_data['price'],
+                "description": serializer.validated_data['description'],
+                "category": serializer.validated_data['category'],
+                "parent_product": serializer.validated_data['parent_product'],
+                "location": serializer.validated_data['location'],
+            }
+        )
+        if 'assets' in serializer.validated_data:
+            update_or_create_assets(serializer.validated_data['assets'], product)
+        return True
+    except:
+        return Response('Error in creating/updating product', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 class DeleteProductAPIView(generics.DestroyAPIView):
@@ -162,3 +176,5 @@ class DeletePhotoAPIView(generics.DestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = models.Photo.objects.all()
     serializer_class = serializers.PhotoSerializer
+
+

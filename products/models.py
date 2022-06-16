@@ -2,10 +2,12 @@ from io import BytesIO
 
 from PIL import Image
 from django.core.files import File
+import null as null
 from django.db import models
 # Create your models here.
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
+from config import settings
 
 from clients.models import User
 
@@ -40,7 +42,7 @@ class Photo(models.Model):
         im_io = BytesIO()
         im.save(im_io, im.format, optimize=True, quality=40)
         new_image = File(im_io, name=self.file.name)
-        self.image = new_image
+        self.file = new_image
         super().save(*args, **kwargs)
 
 

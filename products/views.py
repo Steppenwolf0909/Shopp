@@ -81,7 +81,6 @@ class CreateProductAPIView(generics.GenericAPIView):
         update_or_create_assets(assets=serializer.validated_data['assets'], product=new_product)
         return Response(data=self.request.data, status=status.HTTP_201_CREATED)
 
-
 class UpdateProductAPIView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = models.Product.objects.all()
@@ -144,3 +143,22 @@ class GetCategories(generics.ListAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.CategorySerializer
     queryset = models.Category.objects.all()
+
+class AddPhotoAPIView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = serializers.AddingPhotoSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_photo = models.Photo(
+            file=serializer.validated_data['file'],
+            product=serializer.validated_data['product'],
+        )
+        new_photo.save()
+        return Response(data=self.request.data, status=status.HTTP_201_CREATED)
+
+class DeletePhotoAPIView(generics.DestroyAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = models.Photo.objects.all()
+    serializer_class = serializers.PhotoSerializer

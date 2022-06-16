@@ -13,5 +13,7 @@ urlpatterns = [
     path('update_product/', views.UpdateProductAPIView.as_view(), name='delete_product'),
     path('get_asset_template/<int:category_id>/', views.GetAssetTemplate.as_view(), name='asset_template'),
     path('get_categories/', views.GetCategories.as_view(), name='get_categories'),
+    path('add_photo/', views.AddPhotoAPIView.as_view(), name='add_photo'),
+    path('delete_photo/<int:pk>/', views.DeletePhotoAPIView.as_view(), name='delete_photo'),
 
 ]

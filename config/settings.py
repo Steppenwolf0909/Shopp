@@ -25,6 +25,7 @@ SECRET_KEY = 'django-insecure-ozn0!yh6lay_h+1-^za0r2-uy4=oq6q2in*1ly_u&%dgk&ny+x
 DEBUG = True
 AUTH_USER_MODEL = 'clients.User'
 ALLOWED_HOSTS = ['*']
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
 
@@ -36,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_filters',
+    'corsheaders',
     'drf_yasg',
     'authorization',
     'products',
@@ -50,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'

@@ -94,3 +94,14 @@ class AssetTemplateSerializer(serializers.ModelSerializer):
 class AddingPhotoSerializer(serializers.Serializer):
     file = serializers.FilePathField(path=settings.MEDIA_ROOT+'/products/images', required=True)
     product = serializers.PrimaryKeyRelatedField(queryset=models.Product.objects.all(), required=True)
+
+class FilterSerializer(serializers.Serializer):
+    filterBy = serializers.CharField(required=False)
+    filterType = serializers.CharField(required=False)
+
+
+class SearchingSerializer(serializers.Serializer):
+    # sortBy = serializers.CharField(required=False)
+    filters = FilterSerializer(many=True, required=False)
+
+

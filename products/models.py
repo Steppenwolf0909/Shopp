@@ -70,6 +70,7 @@ class Product(models.Model):
 
 class Asset(models.Model):
     name = models.CharField(max_length=200, verbose_name='Наименование характеристики', null=True)
+    # measure_units = models.CharField(max_length=50, verbose_name='Единицы измерения', null=True, blank=True)
     slug = models.CharField(max_length=200, null=True)
 
     def __str__(self):
@@ -79,10 +80,20 @@ class Asset(models.Model):
         verbose_name = 'Характеристика'
         verbose_name_plural = 'Характеристики'
 
+class AssetsDataType(models.Model):
+    type = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.type}'
+
+    class Meta:
+        verbose_name = 'Тип данных характеристики'
+        verbose_name_plural = 'Типы данных характеристик'
 
 class AssetTemplate(models.Model):
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, verbose_name='Характеристика')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
+    data_type = models.ForeignKey(AssetsDataType, on_delete=models.CASCADE, verbose_name='Тип данных')
 
     def __str__(self):
         return f'{self.category.name} {self.asset.name}'

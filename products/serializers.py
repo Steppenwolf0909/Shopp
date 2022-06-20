@@ -4,6 +4,7 @@ from clients.serializers import UserSerializer
 from . import models
 from .models import Product
 from config import settings
+from drf_extra_fields.fields import Base64ImageField
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -91,9 +92,13 @@ class AssetTemplateSerializer(serializers.ModelSerializer):
         exclude = ('category',)
 
 
-class AddingPhotoSerializer(serializers.Serializer):
-    file = serializers.FilePathField(path=settings.MEDIA_ROOT+'/products/images', required=True)
+class AddingPhotoSerializer(serializers.ModelSerializer):
+    file = Base64ImageField(required=True)
     product = serializers.PrimaryKeyRelatedField(queryset=models.Product.objects.all(), required=True)
+
+    class Meta:
+        model = models.Photo
+        fields = '__all__'
 
 class FilterSerializer(serializers.Serializer):
     filterBy = serializers.CharField(required=False)

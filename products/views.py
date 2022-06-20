@@ -9,8 +9,9 @@ from rest_framework.viewsets import generics
 from . import models
 from . import serializers
 from config import settings
-from django_filters import rest_framework as filters
 from rest_framework import filters as sFilters
+from . import filters
+from django_filters import rest_framework as djfilters
 
 
 class SearchResultsView(generics.ListAPIView):
@@ -20,27 +21,14 @@ class SearchResultsView(generics.ListAPIView):
     filter_backends = [sFilters.SearchFilter]
     search_fields = ['name', 'description', 'manufacturer', 'category__name']
 
-class FilterProducts(filters.FilterSet):
-    min_price = filters.NumberFilter(field_name="price", lookup_expr='gte')
-    max_price = filters.NumberFilter(field_name="price", lookup_expr='lte')
-    min_favorites_count = filters.NumberFilter(field_name="favorites_count", lookup_expr='gte')
-    max_favorites_count = filters.NumberFilter(field_name="favorites_count", lookup_expr='lte')
-    location = filters.BaseInFilter(field_name="location", lookup_expr='in')
-    manufacturer = filters.BaseInFilter(field_name="manufacturer", lookup_expr='in')
-    category = filters.BaseInFilter(field_name="category__name", lookup_expr='in')
-    parent_product = filters.BaseInFilter(field_name="parent_product__name", lookup_expr='in')
 
-    class Meta:
-        model = models.Product
-        fields = ['min_price', 'max_price', 'min_favorites_count', 'max_favorites_count',
-                  'manufacturer', 'location', 'category', 'parent_product']
 
 class FilterResultsView(generics.ListAPIView):
     queryset = models.Product.objects.all()
     model = models.Product
     serializer_class = serializers.ShortProductSerializer
-    filter_backends = [filters.DjangoFilterBackend]
-    filterset_class = FilterProducts
+    filter_backends = [djfilters.DjangoFilterBackend]
+    filterset_class = filters.FilterProducts
 
 
     def get_queryset(self):
@@ -182,19 +170,11 @@ class GetCategories(generics.ListAPIView):
     serializer_class = serializers.CategorySerializer
     queryset = models.Category.objects.all()
 
-class AddPhotoAPIView(generics.GenericAPIView):
+class AddPhotoAPIView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
+    queryset = models.Photo.objects.all()
     serializer_class = serializers.AddingPhotoSerializer
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        new_photo = models.Photo(
-            file=serializer.validated_data['file'].replace(settings.MEDIA_ROOT+'/', ''),
-            product=serializer.validated_data['product'],
-        )
-        new_photo.save()
-        return Response(data=self.request.data, status=status.HTTP_201_CREATED)
 
 class DeletePhotoAPIView(generics.DestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)

@@ -2,13 +2,8 @@ from rest_framework import serializers
 
 from clients.serializers import UserSerializer
 from . import models
-# class CategorySerializer(serializers.ModelSerializer):
-#     parent_category = CategorySerializer(many=False)
-#
-#     class Meta:
-#         model = models.Category
-#         fields = '__all__'
 from .models import Product
+from config import settings
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -94,3 +89,19 @@ class AssetTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.AssetTemplate
         exclude = ('category',)
+
+
+class AddingPhotoSerializer(serializers.Serializer):
+    file = serializers.FilePathField(path=settings.MEDIA_ROOT+'/products/images', required=True)
+    product = serializers.PrimaryKeyRelatedField(queryset=models.Product.objects.all(), required=True)
+
+class FilterSerializer(serializers.Serializer):
+    filterBy = serializers.CharField(required=False)
+    filterType = serializers.CharField(required=False)
+
+
+class SearchingSerializer(serializers.Serializer):
+    # sortBy = serializers.CharField(required=False)
+    filters = FilterSerializer(many=True, required=False)
+
+

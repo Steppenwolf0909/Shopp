@@ -1,17 +1,15 @@
-import required
-from django.db.models import Q, F
+from django.db.models import Q
+from django_filters import rest_framework as djfilters
+from rest_framework import filters as sFilters
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework import views
 from rest_framework.response import Response
 from rest_framework.viewsets import generics
 
+from . import filters
 from . import models
 from . import serializers
-from config import settings
-from rest_framework import filters as sFilters
-from . import filters
-from django_filters import rest_framework as djfilters
 
 
 class SearchResultsView(generics.ListAPIView):
@@ -22,14 +20,12 @@ class SearchResultsView(generics.ListAPIView):
     search_fields = ['name', 'description', 'manufacturer', 'category__name']
 
 
-
 class FilterResultsView(generics.ListAPIView):
     queryset = models.Product.objects.all()
     model = models.Product
     serializer_class = serializers.ShortProductSerializer
     filter_backends = [djfilters.DjangoFilterBackend]
     filterset_class = filters.FilterProducts
-
 
     def get_queryset(self):
         serializer = serializers.SearchingSerializer(data=self.request.data)
@@ -40,7 +36,8 @@ class FilterResultsView(generics.ListAPIView):
             if filters:
                 for f in filters:
                     filter_list = (Q(**{'asset__name': f['filterBy']}) & Q(**{'value': f['filterType']}))
-                    object_list = list(models.ValueAsset.objects.filter(filter_list).values_list('product__id', flat=True))
+                    object_list = list(
+                        models.ValueAsset.objects.filter(filter_list).values_list('product__id', flat=True))
                     query_list = [x for x in object_list if x in query_list]
                 return models.Product.objects.filter(id__in=query_list)
         except:
@@ -86,12 +83,12 @@ class CreateProductAPIView(generics.GenericAPIView):
 class UpdateProductAPIView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = models.Product.objects.all()
-    serializer_class = serializers.ShortProductSerializer
+    serializer_class = serializers.ProductCardSerializer
 
-    def patch(self, request):
+    def patch(self, request, pk):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        if update_or_create_product(serializer, request.user, self.request.query_params.get('id')):
+        if update_or_create_product(serializer, request.user, product_id=pk):
             return Response(data=request.data, status=status.HTTP_201_CREATED)
 
 
@@ -108,10 +105,11 @@ def update_or_create_assets(assets, product):
             }
         )
 
-def update_or_create_product(serializer, user, id=None):
+
+def update_or_create_product(serializer, user, product_id=None):
     try:
         product, created = models.Product.objects.update_or_create(
-            id=id,
+            id=product_id,
             defaults={
                 "user": user,
                 "manufacturer": serializer.validated_data['manufacturer'],
@@ -128,7 +126,6 @@ def update_or_create_product(serializer, user, id=None):
         return True
     except:
         return Response('Error in creating/updating product', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 
 class DeleteProductAPIView(generics.DestroyAPIView):
@@ -170,6 +167,7 @@ class GetCategories(generics.ListAPIView):
     serializer_class = serializers.CategorySerializer
     queryset = models.Category.objects.all()
 
+
 class AddPhotoAPIView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = models.Photo.objects.all()
@@ -180,5 +178,3 @@ class DeletePhotoAPIView(generics.DestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = models.Photo.objects.all()
     serializer_class = serializers.PhotoSerializer
-
-

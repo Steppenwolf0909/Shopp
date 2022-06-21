@@ -1,15 +1,16 @@
-from django.db.models import Q
-from django_filters import rest_framework as djfilters
-from rest_framework import filters as sFilters
+from django.db.models import Q, F
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework import views
 from rest_framework.response import Response
 from rest_framework.viewsets import generics
-
-from . import filters
+from django.core import serializers as core_serializers
 from . import models
 from . import serializers
+from rest_framework import filters as sFilters
+from . import filters
+from django_filters import rest_framework as djfilters
+import json
 
 
 class SearchResultsView(generics.ListAPIView):
@@ -76,9 +77,7 @@ class CreateProductAPIView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        if update_or_create_product(serializer, request.user):
-            return Response(data=request.data, status=status.HTTP_201_CREATED)
-
+        return update_or_create_product(serializer, request.user)
 
 class UpdateProductAPIView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -88,8 +87,7 @@ class UpdateProductAPIView(views.APIView):
     def patch(self, request, pk):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        if update_or_create_product(serializer, request.user, product_id=pk):
-            return Response(data=request.data, status=status.HTTP_201_CREATED)
+        return update_or_create_product(serializer, request.user, pk)
 
 
 def update_or_create_assets(assets, product):
@@ -123,9 +121,10 @@ def update_or_create_product(serializer, user, product_id=None):
         )
         if 'assets' in serializer.validated_data:
             update_or_create_assets(serializer.validated_data['assets'], product)
-        return True
+        return Response(data=json.loads(core_serializers.serialize('json', [product])), status=status.HTTP_201_CREATED)
     except:
-        return Response('Error in creating/updating product', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response("Error in creating/updating product", status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class DeleteProductAPIView(generics.DestroyAPIView):
@@ -178,3 +177,5 @@ class DeletePhotoAPIView(generics.DestroyAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = models.Photo.objects.all()
     serializer_class = serializers.PhotoSerializer
+
+

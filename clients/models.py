@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from .managers import UserManager
 
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
@@ -51,6 +52,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
 
 
 class Review(models.Model):

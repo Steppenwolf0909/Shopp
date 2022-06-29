@@ -36,7 +36,14 @@ class FilterResultsView(generics.ListAPIView):
             filters = serializer.validated_data['filters']
             if filters:
                 for f in filters:
-                    filter_list = (Q(**{'asset__name': f['filterBy']}) & Q(**{'value': f['filterType']}))
+                    if 'max_' in f['filterBy']:
+                        filter_list = (Q(**{'asset__name': f['filterBy'].replace('max_', '')}) & Q(
+                            **{'value__lte': f['filterType']}))
+                    elif 'min_' in f['filterBy']:
+                        filter_list = (Q(**{'asset__name': f['filterBy'].replace('min_', '')}) & Q(
+                            **{'value__gte': f['filterType']}))
+                    else:
+                        filter_list = (Q(**{'asset__name': f['filterBy']}) & Q(**{'value': f['filterType']}))
                     object_list = list(
                         models.ValueAsset.objects.filter(filter_list).values_list('product__id', flat=True))
                     query_list = [x for x in object_list if x in query_list]

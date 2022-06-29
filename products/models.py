@@ -104,9 +104,10 @@ class AssetTemplate(models.Model):
         verbose_name_plural = 'Наборы характеристик для категорий'
 
 
+
 class ValueAsset(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт', related_name='assets')
-    asset = models.ForeignKey(Asset, on_delete=models.CASCADE, verbose_name='Характеристика')
+    asset = models.ForeignKey(Asset, on_delete=models.CASCADE, verbose_name='Характеристика', related_name='asset')
     value = models.CharField(max_length=512, verbose_name='Значение характеристики', null=True, blank=True)
 
     def __str__(self):
@@ -116,6 +117,29 @@ class ValueAsset(models.Model):
         verbose_name = 'Значение характеристики'
         verbose_name_plural = 'Значение характеристики'
 
+
+# class CategoryAsset(models.Model):
+#     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория', related_name='category')
+#     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, verbose_name='Характеристика', related_name='asset')
+#
+#     def __str__(self):
+#         return f'{self.category.name} {self.asset.name}'
+#
+#     class Meta:
+#         verbose_name = 'Характеристика категории'
+#         verbose_name_plural = 'Характеристики категории'
+
+
+# class AssetOption(models.Model):
+#     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, verbose_name='Характеристика', related_name='asset')
+#     value = models.CharField(max_length=512, verbose_name='Вариант значения характеристики', null=True, blank=True)
+#
+#     def __str__(self):
+#         return f'{self.asset.name} {self.value}'
+#
+#     class Meta:
+#         verbose_name = 'Вариант значения характеристики'
+#         verbose_name_plural = 'Варианты значений характеристик'
 
 class Favorites(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт',

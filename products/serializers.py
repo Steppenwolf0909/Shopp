@@ -1,3 +1,4 @@
+import required
 from rest_framework import serializers
 
 from clients.serializers import UserSerializer
@@ -83,11 +84,18 @@ class ProductCardSerializer(serializers.Serializer):
     parent_product = serializers.PrimaryKeyRelatedField(queryset=models.Product.objects.all(), required=False)
 
 
-class AssetTemplateSerializer(serializers.ModelSerializer):
+# class AssetTemplateSerializer(serializers.ModelSerializer):
+#     asset = AssetsSerializer()
+#
+#     class Meta:
+#         model = models.AssetTemplate
+#         exclude = ('category',)
+
+class AssetTemplateSerializer(serializers.Serializer):
     asset = AssetsSerializer()
+    option = serializers.JSONField(required=False)
 
     class Meta:
-        model = models.AssetTemplate
         exclude = ('category',)
 
 

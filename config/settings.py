@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'clients',
     'chats',
     'channels',
-    'oauth2_provider',
 ]
 
 MIDDLEWARE = [

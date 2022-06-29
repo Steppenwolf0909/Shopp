@@ -165,7 +165,9 @@ class GetAssetTemplate(generics.ListAPIView):
 
     def get_queryset(self):
         cat = models.Category.objects.get(id=self.kwargs['category_id'])
-        return models.AssetTemplate.objects.filter(category=cat)
+        options = models.Asset_Option.objects.filter(asset__category_id=cat.id)
+        templates = models.AssetTemplate.objects.filter(category=cat)
+        return templates
 
 
 class GetCategories(generics.ListAPIView):

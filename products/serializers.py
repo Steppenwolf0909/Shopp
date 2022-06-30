@@ -46,8 +46,14 @@ class CategorySerializer(serializers.ModelSerializer):
         else:
             return None
 
+class DataTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AssetsDataType
+        fields = '__all__'
 
 class AssetsSerializer(serializers.ModelSerializer):
+    data_type = DataTypeSerializer()
+
     class Meta:
         model = models.Asset
         fields = '__all__'
@@ -84,18 +90,12 @@ class ProductCardSerializer(serializers.Serializer):
     parent_product = serializers.PrimaryKeyRelatedField(queryset=models.Product.objects.all(), required=False)
 
 
-# class AssetTemplateSerializer(serializers.ModelSerializer):
-#     asset = AssetsSerializer()
-#
-#     class Meta:
-#         model = models.AssetTemplate
-#         exclude = ('category',)
 
-class AssetTemplateSerializer(serializers.Serializer):
+class AssetTemplateSerializer(serializers.ModelSerializer):
     asset = AssetsSerializer()
-    option = serializers.JSONField(required=False)
 
     class Meta:
+        model = models.AssetTemplate
         exclude = ('category',)
 
 
@@ -107,9 +107,11 @@ class AddingPhotoSerializer(serializers.ModelSerializer):
         model = models.Photo
         fields = '__all__'
 
+
 class FilterSerializer(serializers.Serializer):
     filterBy = serializers.CharField(required=False)
     filterType = serializers.CharField(required=False)
+    arrayFilterType = serializers.ListField(child=serializers.CharField(), required=False)
 
 
 class SearchingSerializer(serializers.Serializer):

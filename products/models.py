@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from config import settings
+from django.contrib.postgres.fields import ArrayField
 
 from clients.models import User
 
@@ -95,6 +96,9 @@ class Asset(models.Model):
 class AssetTemplate(models.Model):
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, verbose_name='Характеристика')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
+    options = ArrayField(
+        models.CharField(max_length=20, verbose_name='Вариант значения', blank=True, null=True)
+    )
 
     def __str__(self):
         return f'{self.category.name} {self.asset.name}'
@@ -129,19 +133,6 @@ class Favorites(models.Model):
     class Meta:
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
-
-
-
-class Asset_Option(models.Model):
-    asset = models.ForeignKey(AssetTemplate, on_delete=models.CASCADE, verbose_name='Характеристика')
-    option = models.CharField(max_length=512, verbose_name='Вариант значения характеристики', null=True, blank=True)
-
-    def __str__(self):
-        return f'{self.asset.asset.name} {self.option}'
-
-    class Meta:
-        verbose_name = 'Вариант значения характеристики'
-        verbose_name_plural = 'Варианты значений характеристик'
 
 
 @receiver(post_save, sender=Favorites)

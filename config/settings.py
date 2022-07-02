@@ -41,7 +41,10 @@ INSTALLED_APPS = [
     'drf_yasg',
     'authorization',
     'products',
-    'clients'
+    'clients',
+    'chats',
+    'channels',
+    'oauth2_provider',
 ]
 
 MIDDLEWARE = [
@@ -185,3 +188,19 @@ SWAGGER_SETTINGS = {
     'SHOW_REQUEST_HEADERS': True,
     'JSON_EDITOR': True,
 }
+
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+
+ASGI_APPLICATION = 'config.routing.application'
+
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"

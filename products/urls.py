@@ -16,5 +16,6 @@ urlpatterns = [
     path('get_categories/', views.GetCategories.as_view(), name='get_categories'),
     path('add_photo/', views.AddPhotoAPIView.as_view(), name='add_photo'),
     path('delete_photo/<int:pk>/', views.DeletePhotoAPIView.as_view(), name='delete_photo'),
+    path('assets_data_type/', views.DeletePhotoAPIView.as_view(), name='delete_photo'),
 
 ]

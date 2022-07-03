@@ -1,0 +1,32 @@
+version: '3.7'
+
+
+services:
+  app:
+    build: .
+    command: >
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    volumes:
+      - ./:/web
+    depends_on:
+      - postgres
+    restart: always
+
+
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ilya
+      POSTGRES_PASSWORD: ilya
+      POSTGRES_DB: PewPewBuy
+    volumes:
+      - ./data:/var/lib/postgresql/data1
+      - ./data/dump/dump:/docker-entrypoint-initdb.b
+

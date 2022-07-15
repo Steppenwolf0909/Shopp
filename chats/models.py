@@ -79,7 +79,7 @@ class Chat(models.Model):
 
 @receiver(post_save, sender=User)
 def create_favorites(sender, instance, created, **kwargs):
-    if created:
+    if (created) & (instance.email!='supportmail@mail.com'):
         support = User.objects.filter(id=1).first()
         chat = Chat(
             first_client = instance,

@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework import views
 from rest_framework.response import Response
 from rest_framework.viewsets import generics
+from rest_framework.pagination import PageNumberPagination
 from django.core import serializers as core_serializers
 from . import models
 from . import serializers
@@ -12,8 +13,11 @@ from . import filters
 from django_filters import rest_framework as djfilters
 import json
 
+class PagesPagination(PageNumberPagination):
+    page_size = 10
 
 class SearchResultsView(generics.ListAPIView):
+    pagination_class = PagesPagination
     queryset = models.Product.objects.all()
     model = models.Product
     serializer_class = serializers.ProductSerializer
@@ -22,6 +26,7 @@ class SearchResultsView(generics.ListAPIView):
 
 
 class FilterResultsView(generics.ListAPIView):
+    pagination_class = PagesPagination
     queryset = models.Product.objects.all()
     model = models.Product
     serializer_class = serializers.ShortProductSerializer
@@ -144,6 +149,7 @@ class DeleteProductAPIView(generics.DestroyAPIView):
 
 
 class ListProductsAPIView(generics.ListAPIView):
+    pagination_class = PagesPagination
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.ShortProductSerializer
     queryset = models.Product.objects.all()

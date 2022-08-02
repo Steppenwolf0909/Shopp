@@ -226,3 +226,13 @@ CELERY_BROKER_URL = 'redis://localhost:6379'
 ASGI_APPLICATION = 'config.routing.application'
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}

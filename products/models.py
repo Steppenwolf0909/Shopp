@@ -77,6 +77,23 @@ class Product(models.Model):
     def __str__(self):
         return f'{self.id} {self.user.email} {self.name}'
 
+    def to_json(self):
+        return {
+            'id': self.id,
+            'user': self.user,
+            'category': self.category,
+            'manufacturer': self.manufacturer,
+            'name': self.name,
+            'price': self.price,
+            'description': self.description,
+            'views_count': self.views_count,
+            'favorites_count': self.favorites_count,
+            'created': self.created,
+            'location': self.location,
+            'parent_product': self.parent_product,
+            'status': self.status,
+        }
+
     class Meta:
         verbose_name = 'Товар'
         verbose_name_plural = 'Товары'

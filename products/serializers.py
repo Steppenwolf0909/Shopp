@@ -33,6 +33,12 @@ class ShortProductSerializer(serializers.ModelSerializer):
         fields = ('name', 'manufacturer', 'price', 'location', 'photo')
 
 
+class ShortProductWithStatusSerializer(ShortProductSerializer):
+    class Meta:
+        model = Product
+        fields = ShortProductSerializer.Meta.fields + ('status',)
+
+
 class CategorySerializer(serializers.ModelSerializer):
     parent_category = serializers.SerializerMethodField()
 

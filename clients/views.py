@@ -4,6 +4,8 @@ from rest_framework.viewsets import generics
 from . import serializers
 # Create your views here.
 from .models import User, Review
+from products.models import Product
+from products.serializers import ShortProductWithStatusSerializer
 
 
 class UpdateUserView(generics.UpdateAPIView):
@@ -17,9 +19,12 @@ class ListUserView(generics.ListAPIView):
     queryset = User.objects.all()
 
 
-class GetDetailUserView(generics.RetrieveAPIView):
-    serializer_class = serializers.GetDetailUserSerializer
-    queryset = User.objects.all()
+class GetUserProductsView(generics.ListAPIView):
+    serializer_class = ShortProductWithStatusSerializer
+
+    def get_queryset(self):
+        return Product.objects.filter(user_id=self.kwargs['pk'])
+
 
 
 class CreateReviewView(generics.CreateAPIView):

@@ -18,6 +18,7 @@ from django.urls import path, include
 from .yasg import urlpatterns as docs
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('admin_tools/', include('admin_tools.urls')),
     path('clients/', include('clients.urls')),
     path('products/', include('products.urls')),
     path('auth/', include('authorization.urls'))

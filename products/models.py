@@ -45,8 +45,20 @@ class Photo(models.Model):
         self.file = new_image
         super().save(*args, **kwargs)
 
+STATUS = [
+    ('Active', 'Active'),
+    ('Sold', 'Sold'),
+    ('Publication off', 'Publication off')
+]
 
 class Product(models.Model):
+    STATUS = [
+        ('Active', 'Active'),
+        ('Sold', 'Sold'),
+        ('On moderation', 'On moderation'),
+        ('Publication off', 'Publication off')
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Владелец')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Подкатегория',
                                  related_name='product')
@@ -60,6 +72,7 @@ class Product(models.Model):
     location = models.CharField(max_length=2000, verbose_name='Местоположение объявления', null=True, blank=True)
     parent_product = models.ForeignKey('Product', on_delete=models.CASCADE, verbose_name='Продукт-родитель', blank=True,
                                        null=True)
+    status = models.CharField(max_length=20, choices=STATUS, default='Active')
 
     def __str__(self):
         return f'{self.id} {self.user.email} {self.name}'
@@ -84,6 +97,9 @@ class Asset(models.Model):
     measure_units = models.CharField(max_length=50, verbose_name='Единицы измерения', null=True, blank=True)
     slug = models.CharField(max_length=200, null=True)
     data_type = models.ForeignKey(AssetsDataType, on_delete=models.CASCADE, verbose_name='Тип данных', null=True, blank=True)
+    options = ArrayField(
+        models.CharField(max_length=20, verbose_name='Вариант значения', blank=True, null=True)
+    )
 
     def __str__(self):
         return f'{self.name}'
@@ -96,9 +112,6 @@ class Asset(models.Model):
 class AssetTemplate(models.Model):
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, verbose_name='Характеристика')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
-    options = ArrayField(
-        models.CharField(max_length=20, verbose_name='Вариант значения', blank=True, null=True)
-    )
 
     def __str__(self):
         return f'{self.category.name} {self.asset.name}'

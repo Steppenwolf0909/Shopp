@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from clients.models import Review, User
+from products.models import Product
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -15,9 +16,3 @@ class UserSerializer(serializers.ModelSerializer):
         exclude = ('password', 'is_staff', 'is_active', 'groups', 'user_permissions', 'is_superuser')
 
 
-class GetDetailUserSerializer(serializers.ModelSerializer):
-    review = ReviewSerializer(many=True)
-
-    class Meta:
-        model = User
-        exclude = ('password', 'is_staff',)

@@ -18,7 +18,7 @@ class PagesPagination(PageNumberPagination):
 
 class SearchResultsView(generics.ListAPIView):
     pagination_class = PagesPagination
-    queryset = models.Product.objects.all()
+    queryset = models.Product.objects.filter(status='Active')
     model = models.Product
     serializer_class = serializers.ProductSerializer
     filter_backends = [sFilters.SearchFilter]
@@ -27,7 +27,7 @@ class SearchResultsView(generics.ListAPIView):
 
 class FilterResultsView(generics.ListAPIView):
     pagination_class = PagesPagination
-    queryset = models.Product.objects.all()
+    queryset = models.Product.objects.filter(status='Active')
     model = models.Product
     serializer_class = serializers.ShortProductSerializer
     filter_backends = [djfilters.DjangoFilterBackend]
@@ -152,7 +152,7 @@ class ListProductsAPIView(generics.ListAPIView):
     pagination_class = PagesPagination
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.ShortProductSerializer
-    queryset = models.Product.objects.all()
+    queryset = models.Product.objects.filter(status='Active')
 
 
 class DetailProductAPIView(generics.RetrieveAPIView):
